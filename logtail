@@ -1,0 +1,10 @@
+#!/bin/bash
+
+pattern=$1
+if [ "$pattern" == "" ]; then
+    pattern="*.log"
+fi
+
+files=`find -name "$pattern"`
+
+tail -f $files | colorize
