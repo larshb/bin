@@ -6,5 +6,16 @@ if [ "$pattern" == "" ]; then
 fi
 
 files=`find -name "$pattern"`
+tail -f $files | colorize &
+pid=$!
 
-tail -f $files | colorize
+inotifywait -m . -e create -e moved_to |
+    while read path action file; do
+        if [[ "$file" =~ .$pattern$ ]]; then # Does the file match pattern?
+            $file found
+            kill $pid
+            files=`find -name "$pattern"`
+            tail -f $files | colorize &
+            pid=$!
+        fi
+    done
